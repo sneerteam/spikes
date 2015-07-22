@@ -14,9 +14,20 @@ public class Main {
 		snitcoin.setListener(new Listener() {
 			public void onChange(Status status) {
 				
-				System.out.println("\nMessage: " + status.message);
+				System.out.println("--------------------------------------------");
+				System.out.println("Message: " + status.message);
 				System.out.println("Balance: " + status.balance);
 				System.out.println("Receive Address: " + status.receiveAddress);
+				
+				System.out.println("Transactions: ");
+				for(Transaction transaction : status.transactions){
+					System.out.println("\tDirection: " + transaction.direction);
+					System.out.println("\tAmount: " + transaction.amount);
+					System.out.println("\tAddress: " + transaction.address);
+					System.out.println("\tStatus: " + transaction.status);
+					System.out.println("");
+				}
+				System.out.println("--------------------------------------------");
 			}
 		});
 
