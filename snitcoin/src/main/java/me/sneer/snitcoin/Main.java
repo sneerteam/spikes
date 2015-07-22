@@ -11,10 +11,10 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Snitcoin snitcoin = new Snitcoin();
-		snitcoin.addListener(new Listener() {
+		snitcoin.setListener(new Listener() {
 			public void onChange(Status status) {
-				System.out.println();
-				System.out.println("Message: " + status.message);
+				
+				System.out.println("\nMessage: " + status.message);
 				System.out.println("Balance: " + status.balance);
 				System.out.println("Receive Address: " + status.receiveAddress);
 			}

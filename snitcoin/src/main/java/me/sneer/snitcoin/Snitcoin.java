@@ -8,7 +8,6 @@ import org.bitcoinj.core.AbstractWalletEventListener;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Block;
-import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.FilteredBlock;
@@ -19,19 +18,13 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.PeerEventListener;
-import org.bitcoinj.core.ScriptException;
-import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.core.Wallet.DustySendRequested;
 import org.bitcoinj.core.WalletEventListener;
-import org.bitcoinj.core.AbstractBlockChain.NewBlockType;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
-import org.bitcoinj.utils.MonetaryFormat;
 
 public class Snitcoin implements Runnable{
 	
@@ -58,11 +51,10 @@ public class Snitcoin implements Runnable{
         kit.awaitRunning();
         
         kit.wallet().addEventListener(new WalletEventListenerImpl());
-        
         listener.onChange(new Status(kit.wallet().getBalance().toString(), null, kit.wallet().currentReceiveAddress().toString(), "Started! "));
 	}
 	
-	public void addListener(Listener listener) {
+	public void setListener(Listener listener) {
 		this.listener = listener;
 	}
 
