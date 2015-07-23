@@ -61,7 +61,7 @@ public class Snitcoin implements Runnable{
 
 		public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 			transactions.add(new me.sneer.snitcoin.Transaction(Direction.RECEIVE, null, tx.getValue(wallet).toString(), null));
-			listener.onChange(new Status(wallet.getBalance().toString(), null, wallet.freshReceiveAddress().toString(),"Coins Received: " + tx.getHashAsString()));
+			listener.onChange(new Status(wallet.getBalance().toString(), transactions, wallet.freshReceiveAddress().toString(),"Coins Received: " + tx.getHashAsString()));
 		}
 
 		public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
