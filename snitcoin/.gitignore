@@ -33,3 +33,6 @@ proguard/
 *.iml
 *.ipr
 *.iws
+
+*.spvchain
+*.wallet
