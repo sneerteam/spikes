@@ -2,14 +2,14 @@ package me.sneer.snitcoin;
 
 public class Transaction {
 	public final Direction direction;
-	public final String address;
+	public final String hash;
 	public final String amount;
-	public final String status;
+	public final String progress;
 	
-	public Transaction(Direction direction, String address, String amount, String status) {
+	public Transaction(Direction direction, String hash, String amount, String progress) {
 		this.direction = direction;
-		this.address = address;
+		this.hash = hash;
 		this.amount = amount;
-		this.status = status;
+		this.progress = progress;
 	}
 }

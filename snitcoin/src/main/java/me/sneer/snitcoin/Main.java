@@ -23,8 +23,8 @@ public class Main {
 				for(Transaction transaction : status.transactions){
 					System.out.println("\tDirection: " + transaction.direction);
 					System.out.println("\tAmount: " + transaction.amount);
-					System.out.println("\tAddress: " + transaction.address);
-					System.out.println("\tStatus: " + transaction.status);
+					System.out.println("\tTransaction hash: " + transaction.hash);
+					System.out.println("\tProgress: " + transaction.progress);
 					System.out.println("");
 				}
 				System.out.println("--------------------------------------------");
