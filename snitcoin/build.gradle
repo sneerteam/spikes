@@ -1,0 +1,6 @@
+allprojects {
+    group = 'me.sneer'
+    repositories {
+        jcenter()
+    }
+}
