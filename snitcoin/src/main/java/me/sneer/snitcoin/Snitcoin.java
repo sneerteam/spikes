@@ -47,11 +47,21 @@ public class Snitcoin implements Runnable{
         kit.startAsync();
         kit.awaitRunning();
         kit.wallet().addEventListener(new WalletEventListenerImpl());
-        listener.onChange(new Status(kit.wallet().getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(), "Started! "));
+
+		notify2(kit.wallet(), "Started! ");
 	}
 
 	public void setListener(Listener listener) {
 		this.listener = listener;
+	}
+
+
+	void notify2(Wallet wallet, String message) {
+		listener.onChange(
+				new Status(wallet.getBalance() + "/EST:" + wallet.getBalance(Wallet.BalanceType.ESTIMATED),
+						transactions,
+						kit.wallet().currentReceiveAddress().toString(),
+						message));
 	}
 
 	private class WalletEventListenerImpl extends AbstractWalletEventListener implements WalletEventListener{
@@ -66,11 +76,11 @@ public class Snitcoin implements Runnable{
 		private void setBroadcastProgressCallback(final Transaction tx, TransactionBroadcast broadcast) {
 			broadcast.setProgressCallback(new ProgressCallback() {
 				public void onBroadcastProgress(double progress) {
-					for(int i = 0; i < transactions.size(); i++){
+					for (int i = 0; i < transactions.size(); i++) {
 						me.sneer.snitcoin.Transaction t = transactions.get(i);
-						if(t.hash.equals(tx.getHashAsString())){
+						if (t.hash.equals(tx.getHashAsString())) {
 							transactions.set(i, new me.sneer.snitcoin.Transaction(t.direction, t.hash, t.amount, String.valueOf(progress)));
-							listener.onChange(new Status(kit.wallet().getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(),"Transaction Progress: " + tx.getHashAsString()));
+							notify2(kit.wallet(), "Transaction Progress: " + tx.getHashAsString());
 						}
 					}
 				}
@@ -78,34 +88,34 @@ public class Snitcoin implements Runnable{
 		}
 		
 		public void onKeysAdded(List<ECKey> keys) {
-			listener.onChange(new Status(null, transactions, null, "Keys Added: " + keys));
+			System.out.println("Keys Added: " + keys);
 		}
 
 		public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 			addTransaction(tx);
 			TransactionBroadcast broadcast = kit.peerGroup().broadcastTransaction(tx);
-        	setBroadcastProgressCallback(tx, broadcast);
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, wallet.freshReceiveAddress().toString(),"Coins Received: " + tx.getHashAsString()));
+			setBroadcastProgressCallback(tx, broadcast);
+			notify2(wallet, "Coins Received: " + tx.getHashAsString());
 		}
 
 		public void onCoinsSent(Wallet wallet, final Transaction tx, Coin prevBalance, Coin newBalance) {
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, wallet.freshReceiveAddress().toString(),"Coins Sent: " + tx.getHashAsString()));
+			notify2(wallet, "Coins Sent: " + tx.getHashAsString());
 		}
 
 		public void onReorganize(Wallet wallet) {
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(), "Reorganize!"));
+			notify2(wallet, "Reorganize!");
 		}
 
 		public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(), "Transaction Confidence Changed: " + tx.getHashAsString()));
+			notify2(wallet, "Transaction Confidence Changed: " + tx.getHashAsString());
 		}
 
 		public void onWalletChanged(Wallet wallet) {
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(), "Wallet Changed!"));
+			notify2(wallet, "Wallet Changed!");
 		}
 
 		public void onScriptsChanged(Wallet wallet, List<Script> scripts, boolean isAddingScripts) {
-			listener.onChange(new Status(wallet.getBalance().toString(), transactions, kit.wallet().currentReceiveAddress().toString(), "Scripts Changed!"));
+			notify2(wallet, "Scripts Changed!");
 		}
 		
 	}
