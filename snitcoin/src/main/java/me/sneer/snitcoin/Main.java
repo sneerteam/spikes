@@ -2,10 +2,6 @@ package me.sneer.snitcoin;
 
 import java.util.Scanner;
 
-import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.core.InsufficientMoneyException;
-import org.bitcoinj.core.Wallet.DustySendRequested;
-
 public class Main {
 
 	public static void main(String[] args) {
@@ -21,7 +17,6 @@ public class Main {
 				
 				System.out.println("Transactions: ");
 				for(Transaction transaction : status.transactions){
-					System.out.println("\tDirection: " + transaction.direction);
 					System.out.println("\tAmount: " + transaction.amount);
 					System.out.println("\tTransaction hash: " + transaction.hash);
 					System.out.println("\tProgress: " + transaction.progress);

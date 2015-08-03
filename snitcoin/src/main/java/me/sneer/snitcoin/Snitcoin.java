@@ -2,7 +2,10 @@ package me.sneer.snitcoin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bitcoinj.core.AbstractWalletEventListener;
@@ -11,6 +14,8 @@ import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Peer;
+import org.bitcoinj.core.RejectMessage;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionBroadcast;
 import org.bitcoinj.core.TransactionBroadcast.ProgressCallback;
@@ -27,6 +32,7 @@ public class Snitcoin implements Runnable {
 	private String filePrefix;
 	private Listener listener;
 	private List<me.sneer.snitcoin.Transaction> transactions;
+	private Map<Peer, RejectMessage> rejects = Collections.synchronizedMap(new HashMap<Peer, RejectMessage>());
 
 	public Snitcoin() {
 		this.params = TestNet3Params.get();
@@ -51,7 +57,15 @@ public class Snitcoin implements Runnable {
         
         Set<Transaction> ts = kit.wallet().getTransactions(true);
         for (Transaction t : ts) {
-        	transactions.add(new me.sneer.snitcoin.Transaction(null, t.getHashAsString(), t.getValue(kit.wallet()).toPlainString(), String.valueOf(t.getConfidence().numBroadcastPeers())));
+
+        	List<Peer> peers = kit.peerGroup().getConnectedPeers();
+        	boolean mined = t.getAppearsInHashes() != null;
+        	int numToBroadcastTo = (int) Math.max(1, Math.round(Math.ceil(peers.size() / 2.0)));
+        	int numWaitingFor = (int) Math.ceil((peers.size() - numToBroadcastTo) / 2.0);
+        	int numSeenPeers = t.getConfidence().numBroadcastPeers() + t.getConfidence().numBroadcastPeers() / 1;
+        	
+        	final double progress = Math.min(1.0, mined ? 1.0 : numSeenPeers / (double) numWaitingFor);
+        	transactions.add(new me.sneer.snitcoin.Transaction(t.getHashAsString(), t.getValue(kit.wallet()).toPlainString(), "" + progress));
 		}
 		notify2(kit.wallet(), "Started! ");
 	}
@@ -68,10 +82,9 @@ public class Snitcoin implements Runnable {
 	private class WalletEventListenerImpl extends AbstractWalletEventListener implements WalletEventListener {
 
 		private void addTransaction(Transaction tx) {
-			Direction direction = tx.getValue(kit.wallet()).isNegative() ? Direction.SEND : Direction.RECEIVE;
 			String hash = tx.getHashAsString();
 			String amount = tx.getValue(kit.wallet()).toPlainString();
-			transactions.add(new me.sneer.snitcoin.Transaction(direction, hash, amount, "0.0"));
+			transactions.add(new me.sneer.snitcoin.Transaction(hash, amount, "0.0"));
 		}
 
 		private void setBroadcastProgressCallback(final Transaction tx, TransactionBroadcast broadcast) {
@@ -80,8 +93,7 @@ public class Snitcoin implements Runnable {
 					for (int i = 0; i < transactions.size(); i++) {
 						me.sneer.snitcoin.Transaction t = transactions.get(i);
 						if (t.hash.equals(tx.getHashAsString())) {
-							transactions.set(i, new me.sneer.snitcoin.Transaction(t.direction, t.hash, t.amount,
-									String.valueOf(progress)));
+							transactions.set(i, new me.sneer.snitcoin.Transaction(t.hash, t.amount, String.valueOf(progress)));
 							notify2(kit.wallet(), "Transaction Progress: " + tx.getHashAsString());
 						}
 					}
