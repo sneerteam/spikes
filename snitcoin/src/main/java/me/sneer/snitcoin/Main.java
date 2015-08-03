@@ -43,11 +43,7 @@ public class Main {
 			
 			try {
 				snitcoin.send(amount, address);
-			} catch (DustySendRequested e) {
-				e.printStackTrace();
-			} catch (AddressFormatException e) {
-				e.printStackTrace();
-			} catch (InsufficientMoneyException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
