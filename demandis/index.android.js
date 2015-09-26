@@ -2,15 +2,10 @@
 'use strict';
 
 var Sneer = require('Sneer')
-
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-
 var Subscribable = require('Subscribable')
-
 var SwitchAndroid = require('SwitchAndroid')
-
 var React = require('react-native')
-
 var {
   AppRegistry,
   StyleSheet,
@@ -29,15 +24,15 @@ var Answer = React.createClass({
     return (
       <View style={styles.flowRight}>
         <View style={{flex: 5}}>
-        <TextInput
-          placeholder={"Answer " + this.props.id}
-          value={this.props.text}
-          onChangeText={this.props.onChangeText} />
+          <TextInput
+            placeholder={"Answer " + this.props.id}
+            value={this.props.text}
+            onChangeText={this.props.onChangeText} />
         </View>
         <View style={{flex: 1, alignSelf: 'stretch', marginTop: 20}}>
-        <SwitchAndroid
-          value={this.props.correct}
-          onValueChange={(value) => this.props.onCorrectChange (value)}/>
+          <SwitchAndroid
+            value={this.props.correct}
+            onValueChange={(value) => this.props.onCorrectChange (value)}/>
         </View>
       </View>
     )
@@ -112,10 +107,7 @@ var demandis = React.createClass({
               correct={this.state.correct == id}
               onCorrectChange={correct => this.setState({correct: id})}
               text={this.state["answer" + id]}
-              onChangeText={(text) => {
-                var update = {}
-                update["answer" + id] = text
-                this.setState(update)}} />
+              onChangeText={(text) => this.setState({["answer" + id]: text})} />
           })}
         <TouchableHighlight
           onPress={this.isValid () ? this.onAddQuestion : undefined}
