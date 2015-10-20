@@ -21,7 +21,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable')
 
 var React = require('react-native');
-var cols = 5;
+var cols = 3;
 var {
   AppRegistry,
   StyleSheet,
@@ -196,12 +196,7 @@ var TicTacToe = React.createClass({
     return { board: new Board(), player: 1 };
   },
 
-  doStuff() {
-    toast ('doStuff???' );
-  },
-
   onMessage(message) {
-
     if (message.wasSentByMe) {
       // toast ('yeah babe!');
     } else {
@@ -248,7 +243,7 @@ var TicTacToe = React.createClass({
   },
 
   handleCellPress(row: number, col: number) {
-    toast ('you pressed:' + row + col);
+    // toast ('you pressed:' + row + col);
     if (this.state.board.hasMark(row, col)) {
       return;
     }
@@ -258,7 +253,7 @@ var TicTacToe = React.createClass({
       player: this.nextPlayer(),
     });
 
-    // Sneer.send(  "hai" );
+    Sneer.send(  "hai" );
   },
 
   render() {
