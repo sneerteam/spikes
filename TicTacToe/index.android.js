@@ -19,9 +19,10 @@
 var Sneer = require('Sneer');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable')
-
 var React = require('react-native');
-var cols = 3;
+
+var BOARD_SIZE = 3;
+
 var {
   AppRegistry,
   StyleSheet,
@@ -39,7 +40,7 @@ class Board {
   turn: number;
 
   constructor() {
-    var size = cols;
+    var size = BOARD_SIZE;
     var grid = Array(size);
     for (var i = 0; i < size; i++) {
       var row = Array(size);
@@ -63,14 +64,14 @@ class Board {
   }
 
   winner(): ?number {
-    for (var i = 0; i < cols; i++) {
+    for (var i = 0; i < BOARD_SIZE; i++) {
       if (this.grid[i][0] !== 0 && this.grid[i][0] === this.grid[i][1] &&
           this.grid[i][0] === this.grid[i][2]) {
         return this.grid[i][0];
       }
     }
 
-    for (var i = 0; i < cols ; i++) {
+    for (var i = 0; i < BOARD_SIZE ; i++) {
       if (this.grid[0][i] !== 0 &&
           this.grid[0][i] === this.grid[1][i] &&
           this.grid[0][i] === this.grid[2][i]) {
@@ -309,11 +310,11 @@ var styles = StyleSheet.create({
   // CELL
 
   cell: {
-    width: 240/cols,
-    height: 240/cols,
+    width: 240/BOARD_SIZE,
+    height: 240/BOARD_SIZE,
     borderRadius: 5,
     backgroundColor: '#7b8994',
-    margin: 15/cols,
+    margin: 15/BOARD_SIZE,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -329,7 +330,7 @@ var styles = StyleSheet.create({
 
   cellText: {
     borderRadius: 5,
-    fontSize: 150/cols,
+    fontSize: 150/BOARD_SIZE,
     fontFamily: 'AvenirNext-Bold',
   },
   cellTextX: {
