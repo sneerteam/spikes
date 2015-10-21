@@ -1,3 +1,5 @@
 rootProject.name = 'ReacTacToe'
 
 include ':app'
+include ':react-native-sneer'
+project(':react-native-sneer').projectDir = new File(settingsDir, '../node_modules/react-native-sneer')
