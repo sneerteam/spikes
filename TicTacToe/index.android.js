@@ -1,19 +1,3 @@
-/**
- * The examples provided by Facebook are for non-commercial testing and
- * evaluation purposes only.
- *
- * Facebook reserves all rights not expressly granted.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * @providesModule TicTacToe
- * @flow
- */
 'use strict';
 
 var Sneer = require('Sneer');
@@ -65,7 +49,8 @@ class Board {
 
   winner(): ?number {
     for (var i = 0; i < BOARD_SIZE; i++) {
-      if (this.grid[i][0] !== 0 && this.grid[i][0] === this.grid[i][1] &&
+      if (this.grid[i][0] !== 0 &&
+          this.grid[i][0] === this.grid[i][1] &&
           this.grid[i][0] === this.grid[i][2]) {
         return this.grid[i][0];
       }
@@ -245,6 +230,7 @@ var TicTacToe = React.createClass({
 
   handleCellPress(row: number, col: number) {
     // toast ('you pressed:' + row + col);
+
     if (this.state.board.hasMark(row, col)) {
       return;
     }
@@ -254,7 +240,7 @@ var TicTacToe = React.createClass({
       player: this.nextPlayer(),
     });
 
-    Sneer.send(  "hai" );
+    // Sneer.send(  "hai" );
   },
 
   render() {
