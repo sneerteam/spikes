@@ -175,7 +175,7 @@ var GameEndOverlay = React.createClass({
   }
 });
 
-var TicTacToe = React.createClass({
+var ReacTacToe = React.createClass({
   mixins: [Subscribable.Mixin],
 
   getInitialState() {
@@ -258,7 +258,7 @@ var TicTacToe = React.createClass({
 
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>ReacTicTacToe</Text>
+        <Text style={styles.title}>ReacTacToe</Text>
         <Text style={styles.title}>Turn: {(this.state.player === 1 ? 'X' : 'O')}</Text>
         <View style={styles.board}>
           {rows}
@@ -360,6 +360,6 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('TicTacToe', () => TicTacToe);
+AppRegistry.registerComponent('ReacTacToe', () => ReacTacToe);
 
-module.exports = TicTacToe;
+module.exports = ReacTacToe;

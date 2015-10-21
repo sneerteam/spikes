@@ -1,4 +1,4 @@
-package com.tictactoe;
+package com.reactactoe;
 
 import android.app.Activity;
 import android.util.Log;

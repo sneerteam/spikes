@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tictactoe">
+    package="com.reactactoe">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -23,7 +23,7 @@
 
 	<meta-data
             android:name="sneer:session-type"
-            android:value="tictactoe"/>
+            android:value="reactactoe"/>
 
       </activity>
 

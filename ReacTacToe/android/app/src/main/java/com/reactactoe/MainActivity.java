@@ -1,4 +1,4 @@
-package com.tictactoe;
+package com.reactactoe;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
 
-        mReactRootView.startReactApplication(mReactInstanceManager, "TicTacToe", null);
+        mReactRootView.startReactApplication(mReactInstanceManager, "ReacTacToe", null);
 
         setContentView(mReactRootView);
     }
