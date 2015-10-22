@@ -185,9 +185,9 @@ var ReacTacToe = React.createClass({
 
   onMessage(message) {
     if (message.wasSentByMe) {
-      // toast ('yeah babe!');
+      // toast ('was sent by me: ' + message);
     } else {
-      // toast ('ohh!');
+      // toast ('not sent by me: ' + message);
       this.setState({
         board: this.state.board.mark(1, 1, this.state.player),
         player: this.nextPlayer(),
@@ -208,8 +208,8 @@ var ReacTacToe = React.createClass({
         Sneer.join()
         this.setState ({enteringQuestions: false})
       }
-      // else
-        // toast ('Not from conversation.')
+      else
+        toast ('Not from conversation.');
     })
 
     this.addListenerOn(RCTDeviceEventEmitter, 'upToDate', this.onUpToDate)
