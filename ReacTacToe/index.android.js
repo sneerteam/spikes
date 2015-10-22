@@ -85,14 +85,13 @@ class Board {
   }
 
   tie(): boolean {
-    for (var i = 0; i < 3; i++) {
-      for (var j = 0; j < 3; j++) {
+    for (var i = 0; i < BOARD_SIZE; i++) {
+      for (var j = 0; j < BOARD_SIZE; j++) {
         if (this.grid[i][j] === 0) {
           return false;
         }
       }
     }
-
     return this.winner() === null;
   }
 }
@@ -235,7 +234,7 @@ var ReacTacToe = React.createClass({
   },
 
   handleCellPress(row: number, col: number) {
-    // toast ('you pressed:' + row + col);
+    log('you pressed:' + this.state.board.grid);
 
     if (this.state.board.hasMark(row, col)) {
       return;
