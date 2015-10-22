@@ -12,11 +12,12 @@ var {
   StyleSheet,
   Text,
   TouchableHighlight,
+  ToastAndroid,
   View,
 } = React;
 
 function toast(message) {
-  Sneer.toast(message, Sneer.SHORT);
+  ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
 class Board {
@@ -199,7 +200,8 @@ var ReacTacToe = React.createClass({
   },
 
   componentWillMount: function() {
-    console.log ("TICTACTOE: componentWillMount")
+    console.log ("TICTACTOE: componentWillMount");
+    toast("TICTACTOE: componentWillMount");
 
     Sneer.wasCalledFromConversation(itWas => {
       if (itWas) {
