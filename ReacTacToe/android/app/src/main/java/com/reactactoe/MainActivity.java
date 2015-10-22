@@ -21,7 +21,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.d("TICTACTOE", "onCreate");
+        Log.d("REACTACTAG", "onCreate");
 
         super.onCreate(savedInstanceState);
         mReactRootView = new ReactRootView(this);

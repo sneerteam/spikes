@@ -6,6 +6,9 @@ var Subscribable = require('Subscribable')
 var React = require('react-native');
 
 var BOARD_SIZE = 3;
+var aRow = 0;
+var aCol = 0;
+var aPlayer = 0;
 
 var {
   AppRegistry,
@@ -16,13 +19,16 @@ var {
   View,
 } = React;
 
+function log(message) {
+  console.log('REACTACTAG: ' + message);
+}
+
 function toast(message) {
   ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
 class Board {
   grid: Array<Array<number>>;
-  turn: number;
 
   constructor() {
     var size = BOARD_SIZE;
@@ -35,8 +41,6 @@ class Board {
       grid[i] = row;
     }
     this.grid = grid;
-
-    this.turn = 1;
   }
 
   mark(row: number, col: number, player: number): Board {
@@ -185,28 +189,29 @@ var ReacTacToe = React.createClass({
 
   onMessage(message) {
     if (message.wasSentByMe) {
-      // toast ('was sent by me: ' + message);
+      log('me: ' + message);
     } else {
-      // toast ('not sent by me: ' + message);
-      this.setState({
-        board: this.state.board.mark(1, 1, this.state.player),
-        player: this.nextPlayer(),
-      });
+      log("adversary: " + message.payload);
+
+      aRow = JSON.parse(message.payload).row;
+      aCol = JSON.parse(message.payload).col;
+      aPlayer = JSON.parse(message.payload).player;
     };
   },
 
   onUpToDate() {
-    // toast ('onUpToDate'),
+    this.setState({
+      board: this.state.board.mark(aRow, aCol, aPlayer),
+      player: this.nextPlayer(),
+    });
   },
 
   componentWillMount: function() {
-    console.log ("TICTACTOE: componentWillMount");
-    toast("TICTACTOE: componentWillMount");
+    log('componentWillMount');
 
     Sneer.wasCalledFromConversation(itWas => {
       if (itWas) {
         Sneer.join()
-        this.setState ({enteringQuestions: false})
       }
       else
         toast ('Not from conversation.');
@@ -217,10 +222,9 @@ var ReacTacToe = React.createClass({
   },
 
   componentWillUnmount: function () {
-    console.log ("TICTACTOE: componentWillUnmount")
+    log('componentWillUnmount')
     Sneer.close ()
   },
-
 
   restartGame() {
     this.setState(this.getInitialState());
@@ -237,12 +241,12 @@ var ReacTacToe = React.createClass({
       return;
     }
 
+    Sneer.send(JSON.stringify({"row": row, "col": col, "player": this.state.player}));
+
     this.setState({
       board: this.state.board.mark(row, col, this.state.player),
       player: this.nextPlayer(),
     });
-
-    // Sneer.send(  "hai" );
   },
 
   render() {
