@@ -6,9 +6,8 @@ var Subscribable = require('Subscribable')
 var React = require('react-native');
 
 var BOARD_SIZE = 3;
-var aRow = 0;
-var aCol = 0;
-var aPlayer = 0;
+var aBoard;
+var aPlayer;
 
 var {
   AppRegistry,
@@ -30,7 +29,11 @@ function toast(message) {
 class Board {
   grid: Array<Array<number>>;
 
-  constructor() {
+  constructor(data) {
+    if (data !== undefined) {
+      Object.assign(this, data);
+      return;
+    }
     var size = BOARD_SIZE;
     var grid = Array(size);
     for (var i = 0; i < size; i++) {
@@ -183,25 +186,38 @@ var ReacTacToe = React.createClass({
   mixins: [Subscribable.Mixin],
 
   getInitialState() {
+    aBoard = undefined;
+    aPlayer = undefined;
     return { board: new Board(), player: 1 };
+  },
+
+  handleCellPress(row: number, col: number) {
+    if (this.state.board.hasMark(row, col)) {
+      return;
+    }
+
+    this.setState({
+      board: this.state.board.mark(row, col, this.state.player),
+      player: this.nextPlayer(),
+    }, () => { Sneer.send(JSON.stringify(this.state)) });
   },
 
   onMessage(message) {
     if (message.wasSentByMe) {
-      log('me: ' + message);
+      log('me: ' + message.payload);
     } else {
       log("adversary: " + message.payload);
 
-      aRow = JSON.parse(message.payload).row;
-      aCol = JSON.parse(message.payload).col;
+      var data = JSON.parse(message.payload).board;
+      aBoard = new Board(data);
       aPlayer = JSON.parse(message.payload).player;
     };
   },
 
   onUpToDate() {
     this.setState({
-      board: this.state.board.mark(aRow, aCol, aPlayer),
-      player: this.nextPlayer(),
+      board: aBoard,
+      player: aPlayer,
     });
   },
 
@@ -226,26 +242,11 @@ var ReacTacToe = React.createClass({
   },
 
   restartGame() {
-    this.setState(this.getInitialState());
+    this.setState(this.getInitialState(), () => { Sneer.send(JSON.stringify(this.state)) });
   },
 
   nextPlayer(): number {
     return this.state.player === 1 ? 2 : 1;
-  },
-
-  handleCellPress(row: number, col: number) {
-    log('you pressed:' + this.state.board.grid);
-
-    if (this.state.board.hasMark(row, col)) {
-      return;
-    }
-
-    Sneer.send(JSON.stringify({"row": row, "col": col, "player": this.state.player}));
-
-    this.setState({
-      board: this.state.board.mark(row, col, this.state.player),
-      player: this.nextPlayer(),
-    });
   },
 
   render() {
