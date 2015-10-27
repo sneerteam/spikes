@@ -6,8 +6,12 @@ var Subscribable = require('Subscribable')
 var React = require('react-native');
 
 var BOARD_SIZE = 3;
+var wasStartedByMe;
 var aBoard;
 var aPlayer;
+var waitingForAdversarysMove;
+var yourSymbol;
+var	adversarysSymbol;
 
 var {
   AppRegistry,
@@ -34,11 +38,10 @@ class Board {
       Object.assign(this, data);
       return;
     }
-    var size = BOARD_SIZE;
-    var grid = Array(size);
-    for (var i = 0; i < size; i++) {
-      var row = Array(size);
-      for (var j = 0; j < size; j++) {
+    var grid = Array(BOARD_SIZE);
+    for (var i = 0; i < BOARD_SIZE; i++) {
+      var row = Array(BOARD_SIZE);
+      for (var j = 0; j < BOARD_SIZE; j++) {
         row[j] = 0;
       }
       grid[i] = row;
@@ -170,11 +173,11 @@ var GameEndOverlay = React.createClass({
       <View style={styles.overlay}>
         <Text style={styles.overlayMessage}>{message}</Text>
         <TouchableHighlight
-          onPress={this.props.onRestart}
+          onPress={this.props.onClose}
           underlayColor="transparent"
           activeOpacity={0.5}>
           <View style={styles.newGame}>
-            <Text style={styles.newGameText}>New Game</Text>
+            <Text style={styles.newGameText}>Ok</Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -185,9 +188,24 @@ var GameEndOverlay = React.createClass({
 var ReacTacToe = React.createClass({
   mixins: [Subscribable.Mixin],
 
+  init() {
+    Sneer.wasCalledFromConversation(itWas => {
+      if (itWas) {
+        Sneer.join();
+        Sneer.wasStartedByMe(was => {
+          aBoard = null;
+          aPlayer = null;
+          waitingForAdversarysMove = was;
+          yourSymbol = (was ? "X" : "O");
+          adversarysSymbol = (was ? "O" : "X");
+        });
+        this.addListenerOn(RCTDeviceEventEmitter, 'upToDate', this.onUpToDate)
+        this.addListenerOn(RCTDeviceEventEmitter, 'message', this.onMessage)
+    }});
+  },
+
   getInitialState() {
-    aBoard = undefined;
-    aPlayer = undefined;
+    this.init();
     return { board: new Board(), player: 1 };
   },
 
@@ -207,9 +225,7 @@ var ReacTacToe = React.createClass({
       log('me: ' + message.payload);
     } else {
       log("adversary: " + message.payload);
-
-      var data = JSON.parse(message.payload).board;
-      aBoard = new Board(data);
+      aBoard = new Board(JSON.parse(message.payload).board);
       aPlayer = JSON.parse(message.payload).player;
     };
   },
@@ -221,28 +237,13 @@ var ReacTacToe = React.createClass({
     });
   },
 
-  componentWillMount: function() {
-    log('componentWillMount');
-
-    Sneer.wasCalledFromConversation(itWas => {
-      if (itWas) {
-        Sneer.join()
-      }
-      else
-        toast ('Not from conversation.');
-    })
-
-    this.addListenerOn(RCTDeviceEventEmitter, 'upToDate', this.onUpToDate)
-    this.addListenerOn(RCTDeviceEventEmitter, 'message', this.onMessage)
-  },
-
   componentWillUnmount: function () {
     log('componentWillUnmount')
-    Sneer.close ()
+    Sneer.close();
   },
 
-  restartGame() {
-    this.setState(this.getInitialState(), () => { Sneer.send(JSON.stringify(this.state)) });
+  closeGame() {
+    Sneer.finish();
   },
 
   nextPlayer(): number {
@@ -265,13 +266,14 @@ var ReacTacToe = React.createClass({
     return (
       <View style={styles.container}>
         <Text style={styles.title}>ReacTacToe</Text>
-        <Text style={styles.title}>Turn: {(this.state.player === 1 ? 'X' : 'O')}</Text>
         <View style={styles.board}>
           {rows}
+          <Text style={styles.player}>You: {yourSymbol}</Text>
+          <Text style={styles.player}>Adversary: {adversarysSymbol}</Text>
         </View>
         <GameEndOverlay
           board={this.state.board}
-          onRestart={this.restartGame}
+          onClose={this.closeGame}
         />
       </View>
     );
@@ -290,6 +292,11 @@ var styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 10,
   },
+  player: {
+    fontFamily: 'Chalkduster',
+    fontSize: 16,
+    color: 'white',
+  },
   board: {
     padding: 5,
     backgroundColor: '#47525d',
@@ -302,11 +309,11 @@ var styles = StyleSheet.create({
   // CELL
 
   cell: {
-    width: 240/BOARD_SIZE,
-    height: 240/BOARD_SIZE,
+    width: 240 / BOARD_SIZE,
+    height: 240 / BOARD_SIZE,
     borderRadius: 5,
     backgroundColor: '#7b8994',
-    margin: 15/BOARD_SIZE,
+    margin: 15 / BOARD_SIZE,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -322,7 +329,7 @@ var styles = StyleSheet.create({
 
   cellText: {
     borderRadius: 5,
-    fontSize: 150/BOARD_SIZE,
+    fontSize: 150 / BOARD_SIZE,
     fontFamily: 'AvenirNext-Bold',
   },
   cellTextX: {
@@ -367,5 +374,3 @@ var styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('ReacTacToe', () => ReacTacToe);
-
-module.exports = ReacTacToe;
