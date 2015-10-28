@@ -193,11 +193,11 @@ var ReacTacToe = React.createClass({
       if (itWas) {
         Sneer.join();
         Sneer.wasStartedByMe(was => {
-          aBoard = null;
-          aPlayer = null;
-          waitingForAdversarysMove = was;
-          yourSymbol = (was ? "X" : "O");
-          adversarysSymbol = (was ? "O" : "X");
+          // aBoard = null;
+          // aPlayer = null;
+          // waitingForAdversarysMove: !was;
+          // yourSymbol: (was ? "X" : "O");
+          // adversarysSymbol: (was ? "O" : "X");
         });
         this.addListenerOn(RCTDeviceEventEmitter, 'upToDate', this.onUpToDate)
         this.addListenerOn(RCTDeviceEventEmitter, 'message', this.onMessage)
@@ -268,8 +268,8 @@ var ReacTacToe = React.createClass({
         <Text style={styles.title}>ReacTacToe</Text>
         <View style={styles.board}>
           {rows}
-          <Text style={styles.player}>You: {yourSymbol}</Text>
-          <Text style={styles.player}>Adversary: {adversarysSymbol}</Text>
+          <Text style={styles.player}>You: {this.state.yourSymbol}</Text>
+          <Text style={styles.player}>Adversary: {this.state.adversarysSymbol}</Text>
         </View>
         <GameEndOverlay
           board={this.state.board}
