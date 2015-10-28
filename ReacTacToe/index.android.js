@@ -185,7 +185,7 @@ var GameEndOverlay = React.createClass({
 var ReacTacToe = React.createClass({
   mixins: [Subscribable.Mixin],
 
-  componentDidMount: function() {
+  componentWillMount: function() {
     Sneer.wasCalledFromConversation(itWas => {
       if (itWas) {
         Sneer.join();
@@ -210,6 +210,10 @@ var ReacTacToe = React.createClass({
   },
 
   handleCellPress(row: number, col: number) {
+    if (this.state.waitingForAdversarysMove) {
+      return;
+    }
+
     if (this.state.board.hasMark(row, col)) {
       return;
     }
@@ -218,7 +222,7 @@ var ReacTacToe = React.createClass({
       board: this.state.board.mark(row, col, this.state.player),
       player: this.nextPlayer(),
     }, () => {
-      Sneer.send(JSON.stringify(this.state))
+      Sneer.send(JSON.stringify(this.state));
     });
   },
 
@@ -229,15 +233,16 @@ var ReacTacToe = React.createClass({
   },
 
   onUpToDate() {
-    this.setState({
-      board: _board,
-      player: _player,
-      waitingForAdversarysMove: _waitingForAdversarysMove,
-    });
+    if (_board !== undefined) {
+      this.setState({
+        board: _board,
+        player: _player,
+        waitingForAdversarysMove: _waitingForAdversarysMove,
+      });
+  }
   },
 
   componentWillUnmount: function() {
-    log('componentWillUnmount')
     Sneer.close();
   },
 
@@ -267,8 +272,9 @@ var ReacTacToe = React.createClass({
         <Text style={styles.title}>ReacTacToe</Text>
         <View style={styles.board}>
           {rows}
-          <Text style={styles.player}>{this.state.waitingForAdversarysMove ? "You: " : "*You: "} {this.state.yourSymbol}</Text>
-          <Text style={styles.player}>{this.state.waitingForAdversarysMove ? "*Adversary: " : "Adversary: "} {this.state.adversarysSymbol}</Text>
+          <Text
+            style={styles.player}>{this.state.waitingForAdversarysMove ? "" : "*"}You: {this.state.yourSymbol}</Text>
+          <Text style={styles.player}>{this.state.waitingForAdversarysMove ? "*" : ""}Adversary: {this.state.adversarysSymbol}</Text>
         </View>
         <GameEndOverlay
           board={this.state.board}
