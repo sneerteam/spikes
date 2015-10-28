@@ -6,12 +6,9 @@ var Subscribable = require('Subscribable')
 var React = require('react-native');
 
 var BOARD_SIZE = 3;
-var wasStartedByMe;
-var aBoard;
-var aPlayer;
-var waitingForAdversarysMove;
-var yourSymbol;
-var	adversarysSymbol;
+var _board;
+var _player;
+var _waitingForAdversarysMove;
 
 var {
   AppRegistry,
@@ -31,7 +28,7 @@ function toast(message) {
 }
 
 class Board {
-  grid: Array<Array<number>>;
+  grid: Array < Array < number >> ;
 
   constructor(data) {
     if (data !== undefined) {
@@ -58,32 +55,32 @@ class Board {
     return this.grid[row][col] !== 0;
   }
 
-  winner(): ?number {
+  winner(): ? number {
     for (var i = 0; i < BOARD_SIZE; i++) {
       if (this.grid[i][0] !== 0 &&
-          this.grid[i][0] === this.grid[i][1] &&
-          this.grid[i][0] === this.grid[i][2]) {
+        this.grid[i][0] === this.grid[i][1] &&
+        this.grid[i][0] === this.grid[i][2]) {
         return this.grid[i][0];
       }
     }
 
-    for (var i = 0; i < BOARD_SIZE ; i++) {
+    for (var i = 0; i < BOARD_SIZE; i++) {
       if (this.grid[0][i] !== 0 &&
-          this.grid[0][i] === this.grid[1][i] &&
-          this.grid[0][i] === this.grid[2][i]) {
+        this.grid[0][i] === this.grid[1][i] &&
+        this.grid[0][i] === this.grid[2][i]) {
         return this.grid[0][i];
       }
     }
 
     if (this.grid[0][0] !== 0 &&
-        this.grid[0][0] === this.grid[1][1] &&
-        this.grid[0][0] === this.grid[2][2]) {
+      this.grid[0][0] === this.grid[1][1] &&
+      this.grid[0][0] === this.grid[2][2]) {
       return this.grid[0][0];
     }
 
     if (this.grid[0][2] !== 0 &&
-        this.grid[0][2] === this.grid[1][1] &&
-        this.grid[0][2] === this.grid[2][0]) {
+      this.grid[0][2] === this.grid[1][1] &&
+      this.grid[0][2] === this.grid[2][0]) {
       return this.grid[0][2];
     }
 
@@ -188,25 +185,28 @@ var GameEndOverlay = React.createClass({
 var ReacTacToe = React.createClass({
   mixins: [Subscribable.Mixin],
 
-  init() {
+  componentDidMount: function() {
     Sneer.wasCalledFromConversation(itWas => {
       if (itWas) {
         Sneer.join();
-        Sneer.wasStartedByMe(was => {
-          // aBoard = null;
-          // aPlayer = null;
-          // waitingForAdversarysMove: !was;
-          // yourSymbol: (was ? "X" : "O");
-          // adversarysSymbol: (was ? "O" : "X");
+        Sneer.wasStartedByMe(wasStartedByMe => {
+          this.setState({
+            waitingForAdversarysMove: !wasStartedByMe,
+            yourSymbol: (wasStartedByMe ? "X" : "O"),
+            adversarysSymbol: (wasStartedByMe ? "O" : "X"),
+          });
         });
         this.addListenerOn(RCTDeviceEventEmitter, 'upToDate', this.onUpToDate)
         this.addListenerOn(RCTDeviceEventEmitter, 'message', this.onMessage)
-    }});
+      }
+    });
   },
 
   getInitialState() {
-    this.init();
-    return { board: new Board(), player: 1 };
+    return {
+      board: new Board(),
+      player: 1
+    };
   },
 
   handleCellPress(row: number, col: number) {
@@ -217,27 +217,26 @@ var ReacTacToe = React.createClass({
     this.setState({
       board: this.state.board.mark(row, col, this.state.player),
       player: this.nextPlayer(),
-    }, () => { Sneer.send(JSON.stringify(this.state)) });
+    }, () => {
+      Sneer.send(JSON.stringify(this.state))
+    });
   },
 
   onMessage(message) {
-    if (message.wasSentByMe) {
-      log('me: ' + message.payload);
-    } else {
-      log("adversary: " + message.payload);
-      aBoard = new Board(JSON.parse(message.payload).board);
-      aPlayer = JSON.parse(message.payload).player;
-    };
+    _board = new Board(JSON.parse(message.payload).board);
+    _player = JSON.parse(message.payload).player;
+    _waitingForAdversarysMove = message.wasSentByMe;
   },
 
   onUpToDate() {
     this.setState({
-      board: aBoard,
-      player: aPlayer,
+      board: _board,
+      player: _player,
+      waitingForAdversarysMove: _waitingForAdversarysMove,
     });
   },
 
-  componentWillUnmount: function () {
+  componentWillUnmount: function() {
     log('componentWillUnmount')
     Sneer.close();
   },
@@ -268,8 +267,8 @@ var ReacTacToe = React.createClass({
         <Text style={styles.title}>ReacTacToe</Text>
         <View style={styles.board}>
           {rows}
-          <Text style={styles.player}>You: {this.state.yourSymbol}</Text>
-          <Text style={styles.player}>Adversary: {this.state.adversarysSymbol}</Text>
+          <Text style={styles.player}>{this.state.waitingForAdversarysMove ? "You: " : "*You: "} {this.state.yourSymbol}</Text>
+          <Text style={styles.player}>{this.state.waitingForAdversarysMove ? "*Adversary: " : "Adversary: "} {this.state.adversarysSymbol}</Text>
         </View>
         <GameEndOverlay
           board={this.state.board}
